@@ -12,11 +12,12 @@ steps:
   displayName: 'Install dependencies'
 
 - script: |
-    python -m nuitka --standalone --onefile --enable-plugin=pyside6 --windows-disable-console hello.py
+    python -m nuitka --standalone --enable-plugin=pyside6 --windows-disable-console hello.py
   displayName: 'Build EXE with Nuitka'
 
 - task: PublishBuildArtifacts@1
   inputs:
-    PathtoPublish: 'hello.exe'
+    PathtoPublish: 'hello.dist'
     ArtifactName: 'drop'
     publishLocation: 'Container'
+
