@@ -1,17 +1,13 @@
 trigger:
-- main   # pipeline runs when you push to main branch
+- main
 
 pool:
-  name: Default
+  name: Default   # self-hosted agent
 
 steps:
-- task: UsePythonVersion@0
-  inputs:
-    versionSpec: '3.12'   # pick the Python version you want
-    addToPath: true
-
 - script: |
-    python -m pip install --upgrade pip
+    python --version
+    pip install --upgrade pip
     pip install -r requirements.txt
   displayName: 'Install dependencies'
 
