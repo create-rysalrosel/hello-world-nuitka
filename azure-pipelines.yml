@@ -25,7 +25,7 @@ steps:
 # Step 4: Install Azure Trusted Signing CLI
 - powershell: |
     Write-Host "Installing Azure Trusted Signing CLI..."
-    winget install --id Microsoft.AzureTrustedSigningClient -e --silent
+    winget install --id Microsoft.AzureTrustedSigningClient -e --silent --accept-source-agreements --accept-package-agreements
   displayName: 'Install Azure Trusted Signing CLI'
 
 # Step 5: Sign the EXE using Azure Trusted Signing CLI
