@@ -19,9 +19,9 @@ steps:
     python -m nuitka --standalone --enable-plugin=pyside6 --msvc=latest hello.py
   displayName: 'Build EXE with Nuitka (MSVC)'
 
-# Step 4: Publish artifact
+# Step 4: Publish artifact (only the exe)
 - task: PublishPipelineArtifact@1
   inputs:
-    targetPath: '$(Build.SourcesDirectory)\hello.dist'
+    targetPath: '$(Build.SourcesDirectory)\hello.exe'
     artifactName: 'hello-exe'
   displayName: 'Publish EXE artifact'
