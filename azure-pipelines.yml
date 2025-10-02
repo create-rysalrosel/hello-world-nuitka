@@ -19,10 +19,25 @@ steps:
     python -m nuitka --standalone --enable-plugin=pyside6 --msvc=latest hello.py
   displayName: 'Build EXE with Nuitka (MSVC)'
 
-# Step 4: Publish artifact (exe + dist folder just in case)
+# Step 4: Sign EXE using Azure Trusted Signing via Azure CLI
+- task: PowerShell@2
+  inputs:
+    targetType: inline
+    script: |
+      echo "Signing EXE with Azure Trusted Signing..."
+      az login --service-principal `
+        --username $(AZURE_CLIENT_ID) `
+        --password $(AZURE_CLIENT_SECRET) `
+        --tenant $(AZURE_TENANT_ID)
+
+      az trustedsigning sign `
+        --trusted-signing-account hello-world-nuitka-rysal `
+        --certificate-profile "Your-Certificate-Profile-Name" `
+        --files "$(Build.SourcesDirectory)\hello.dist\hello.exe"
+
+# Step 5: Publish artifact (exe + dist folder just in case)
 - task: PublishPipelineArtifact@1
   inputs:
-    targetPath: '$(Build.SourcesDirectory)'
+    targetPath: '$(Build.SourcesDirectory)\hello.dist'
     artifactName: 'hello-exe'
   displayName: 'Publish EXE artifact'
-
