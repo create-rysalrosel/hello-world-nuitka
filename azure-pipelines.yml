@@ -5,7 +5,7 @@ pool:
   name: 'Default'   # your self-hosted agent pool
 
 variables:
-- group: Azure IDs   # Make sure you created this variable group in DevOps
+- group: Azure IDs   # 🔹 Make sure this variable group contains:
 
 steps:
 # Step 1: Checkout code
@@ -22,25 +22,30 @@ steps:
     python -m nuitka --standalone --enable-plugin=pyside6 --msvc=latest hello.py
   displayName: 'Build EXE with Nuitka (MSVC)'
 
-# Step 4: Sign the EXE using Azure Trusted Signing via PowerShell
+# Step 4: Install Azure Trusted Signing CLI
+- powershell: |
+    Write-Host "Installing Azure Trusted Signing CLI..."
+    winget install --id Microsoft.AzureTrustedSigningClient -e --silent
+  displayName: 'Install Azure Trusted Signing CLI'
+
+# Step 5: Sign the EXE using Azure Trusted Signing CLI
 - powershell: |
     Write-Host "Signing EXE with Azure Trusted Signing..."
-    signtool sign `
-      /tr http://timestamp.digicert.com `
-      /fd SHA256 `
-      /a `
-      /v `
-      /debug `
-      /n "CN=johnrysalroselgmail.onmicrosoft.com, O=johnrysalroselgmail.onmicrosoft.com, OU=HelloWorldNuitkaRysal, STREET=F. Cruz St., L=Pasay City, C=PH" `
+    azuresigntool sign `
+      --endpoint "https://eus.codesigning.azure.net/" `
+      --certificate-profile "hello-world-nuitka-rysal" `
+      --azure-key-vault-client-id $env:AZURE_CLIENT_ID `
+      --azure-key-vault-client-secret $env:AZURE_CLIENT_SECRET `
+      --azure-key-vault-tenant-id $env:AZURE_TENANT_ID `
       "$(Build.SourcesDirectory)\hello.dist\hello.exe"
-  displayName: 'Code Sign EXE'
+  displayName: 'Code Sign EXE with Azure Trusted Signing'
   env:
     AZURE_CLIENT_ID: $(AZURE_CLIENT_ID)
     AZURE_CLIENT_SECRET: $(AZURE_CLIENT_SECRET)
     AZURE_TENANT_ID: $(AZURE_TENANT_ID)
     AZURE_SUBSCRIPTION_ID: $(AZURE_SUBSCRIPTION_ID)
 
-# Step 5: Publish artifact
+# Step 6: Publish artifact
 - task: PublishPipelineArtifact@1
   inputs:
     targetPath: '$(Build.SourcesDirectory)\hello.dist'
