@@ -22,13 +22,7 @@ steps:
     python -m nuitka --standalone --enable-plugin=pyside6 --msvc=latest hello.py
   displayName: 'Build EXE with Nuitka (MSVC)'
 
-# Step 4: Install Azure Trusted Signing CLI
-- powershell: |
-    Write-Host "Installing Azure Trusted Signing CLI..."
-    winget install --id Microsoft.AzureTrustedSigningClient -e --silent --accept-source-agreements --accept-package-agreements
-  displayName: 'Install Azure Trusted Signing CLI'
-
-# Step 5: Sign the EXE using Azure Trusted Signing CLI
+# Step 4: Sign the EXE using Azure Trusted Signing CLI
 - powershell: |
     Write-Host "Signing EXE with Azure Trusted Signing..."
     C:\Users\Rysal\AzureSignTool-x64.exe `
@@ -40,7 +34,7 @@ steps:
       "$(Build.SourcesDirectory)\hello.dist\hello.exe"
   displayName: 'Sign EXE with Azure Trusted Signing'
 
-# Step 6: Publish artifact
+# Step 5: Publish artifact
 - task: PublishPipelineArtifact@1
   inputs:
     targetPath: '$(Build.SourcesDirectory)\hello.dist'
