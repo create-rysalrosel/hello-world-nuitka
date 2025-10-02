@@ -32,7 +32,7 @@ steps:
 
       az trustedsigning sign `
         --trusted-signing-account hello-world-nuitka-rysal `
-        --certificate-profile "Your-Certificate-Profile-Name" `
+        --certificate-profile "hello-world-nuitka-rysal" `
         --files "$(Build.SourcesDirectory)\hello.dist\hello.exe"
 
 # Step 5: Publish artifact (exe + dist folder just in case)
