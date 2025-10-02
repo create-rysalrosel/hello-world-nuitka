@@ -2,22 +2,34 @@ trigger:
 - main
 
 pool:
-  name: Default   # self-hosted agent
+  name: 'Default'     # 👈 Use your self-hosted agent pool name here
 
 steps:
-- script: |
-    python --version
-    pip install --upgrade pip
-    pip install -r requirements.txt
-  displayName: 'Install dependencies'
+# Step 1: Checkout code
+- checkout: self
 
-- script: |
-    python -m nuitka --standalone --enable-plugin=pyside6 --windows-disable-console hello.py
-  displayName: 'Build EXE with Nuitka'
-
-- task: PublishBuildArtifacts@1
+# Step 2: (Optional) Use Python installed on your self-hosted machine
+# If Python is already installed and in PATH, you can skip this task
+- task: UsePythonVersion@0
   inputs:
-    PathtoPublish: 'hello.dist'
-    ArtifactName: 'drop'
-    publishLocation: 'Container'
+    versionSpec: '3.12'
+    addToPath: true
+  displayName: 'Setup Python 3.12 (if needed)'
 
+# Step 3: Install dependencies
+- script: |
+    python -m pip install --upgrade pip
+    pip install nuitka pyside6
+  displayName: 'Install Python packages'
+
+# Step 4: Build EXE with Nuitka using MSVC
+- script: |
+    python -m nuitka --standalone --onefile --enable-plugin=pyside6 --msvc=latest hello.py
+  displayName: 'Build EXE with Nuitka (MSVC)'
+
+# Step 5: Publish artifact
+- task: PublishPipelineArtifact@1
+  inputs:
+    targetPath: '$(Build.SourcesDirectory)\hello.dist'
+    artifactName: 'hello-exe'
+  displayName: 'Publish EXE artifact'
