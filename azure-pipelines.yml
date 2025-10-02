@@ -31,19 +31,14 @@ steps:
 # Step 5: Sign the EXE using Azure Trusted Signing CLI
 - powershell: |
     Write-Host "Signing EXE with Azure Trusted Signing..."
-    azuresigntool sign `
+    C:\Users\Rysal\AzureSignTool-x64.exe `
       --endpoint "https://eus.codesigning.azure.net/" `
       --certificate-profile "hello-world-nuitka-rysal" `
-      --azure-key-vault-client-id $env:AZURE_CLIENT_ID `
-      --azure-key-vault-client-secret $env:AZURE_CLIENT_SECRET `
-      --azure-key-vault-tenant-id $env:AZURE_TENANT_ID `
+      --azure-key-vault-client-id $(AZURE_CLIENT_ID) `
+      --azure-key-vault-client-secret $(AZURE_CLIENT_SECRET) `
+      --azure-key-vault-tenant-id $(AZURE_TENANT_ID) `
       "$(Build.SourcesDirectory)\hello.dist\hello.exe"
-  displayName: 'Code Sign EXE with Azure Trusted Signing'
-  env:
-    AZURE_CLIENT_ID: $(AZURE_CLIENT_ID)
-    AZURE_CLIENT_SECRET: $(AZURE_CLIENT_SECRET)
-    AZURE_TENANT_ID: $(AZURE_TENANT_ID)
-    AZURE_SUBSCRIPTION_ID: $(AZURE_SUBSCRIPTION_ID)
+  displayName: 'Sign EXE with Azure Trusted Signing'
 
 # Step 6: Publish artifact
 - task: PublishPipelineArtifact@1
