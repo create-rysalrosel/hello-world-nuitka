@@ -36,7 +36,7 @@ steps:
     AzureClientSecret: '$(AZURE_CLIENT_SECRET)'
     Endpoint: 'https://eus.codesigning.azure.net/'   # your Trusted Signing account endpoint
     TrustedSigningAccountName: 'hello-world-nuitka-rysal'  # your Trusted Signing account
-    CertificateProfileName: 'hello-world-nuitka-profile'    # your certificate profile name
+    CertificateProfileName: 'hello-world-nuitka-rysal'    # your certificate profile name
     FilesFolder: '$(Build.SourcesDirectory)/hello.dist'
     FilesFolderFilter: 'hello.exe'      # can also use *.exe to sign multiple files
     FilesFolderRecurse: false
