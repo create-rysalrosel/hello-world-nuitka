@@ -21,6 +21,11 @@ steps:
 - script: |
     python -m nuitka --standalone --enable-plugin=pyside6 --msvc=latest hello.py
   displayName: 'Build EXE with Nuitka (MSVC)'
+  
+- powershell: |
+    Write-Host "Ensuring NuGet package provider is installed..."
+    Install-PackageProvider -Name NuGet -Force -Scope CurrentUser
+  displayName: 'Install NuGet provider'
 
 # Step 4: Sign EXE using Azure Trusted Signing
 - task: TrustedSigning@0
