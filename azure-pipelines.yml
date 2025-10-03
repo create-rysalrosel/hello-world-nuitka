@@ -22,17 +22,22 @@ steps:
     python -m nuitka --standalone --enable-plugin=pyside6 --msvc=latest hello.py
   displayName: 'Build EXE with Nuitka (MSVC)'
 
-# Step 4: Sign the EXE using Azure Trusted Signing CLI
-- powershell: |
-    Write-Host "Signing EXE with Azure Trusted Signing..."
-    C:\Users\Rysal\AzureSignTool-x64.exe sign `
-      --endpoint "https://eus.codesigning.azure.net/" `
-      --certificate-profile "hello-world-nuitka-rysal" `
-      --azure-key-vault-client-id $(AZURE_CLIENT_ID) `
-      --azure-key-vault-client-secret $(AZURE_CLIENT_SECRET) `
-      --azure-key-vault-tenant-id $(AZURE_TENANT_ID) `
-      "$(Build.SourcesDirectory)\hello.dist\hello.exe"
-  displayName: 'Sign EXE with Azure Trusted Signing'
+# Step 4: Sign EXE using Azure Trusted Signing
+- task: TrustedSigning@0
+  displayName: 'Sign EXE with Trusted Signing'
+  inputs:
+    AzureTenantID: '$(AZURE_TENANT_ID)'
+    AzureClientID: '$(AZURE_CLIENT_ID)'
+    AzureClientSecret: '$(AZURE_CLIENT_SECRET)'
+    Endpoint: 'https://eus.codesigning.azure.net/'   # your Trusted Signing account endpoint
+    TrustedSigningAccountName: 'hello-world-nuitka-rysal'  # your Trusted Signing account
+    CertificateProfileName: 'hello-world-nuitka-profile'    # your certificate profile name
+    FilesFolder: '$(Build.SourcesDirectory)/hello.dist'
+    FilesFolderFilter: 'hello.exe'      # can also use *.exe to sign multiple files
+    FilesFolderRecurse: false
+    FileDigest: 'SHA256'
+    TimestampRfc3161: 'http://timestamp.digicert.com'
+    TimestampDigest: 'SHA256'
 
 # Step 5: Publish artifact
 - task: PublishPipelineArtifact@1
